@@ -1,0 +1,43 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+#Oracle Linux 8: https://oracle.github.io/vagrant-projects/boxes/oraclelinux/8.json
+#Oracle Linux 7: https://oracle.github.io/vagrant-projects/boxes/oraclelinux/7.json
+#Oracle Linux 6: https://oracle.github.io/vagrant-projects/boxes/oraclelinux/6.json
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "oraclelinux/8"
+  config.vm.box_url = "https://oracle.github.io/vagrant-projects/boxes/oraclelinux/8.json"
+
+  #
+  # Descomentar si estamos destras de un proxy
+  #
+  #if Vagrant.has_plugin?("vagrant-proxyconf")
+  #  config.proxy.http     = "http://192.168.150.17:8080"
+  #  config.proxy.https    = "http://192.168.150.17:8080"
+  #  config.proxy.no_proxy = "localhost,127.0.0.1"
+  #end
+
+  config.vm.define "zbxsrv01" do |h|
+    h.vm.box = "oraclelinux/8"
+    h.vm.hostname = "zbxsrv01"
+    h.vm.network "private_network", ip: "10.1.100.100"
+    h.vm.provision "shell", path: "provisioning.sh"
+    h.vm.provider "libvirt" do |node|
+      node.name = "zbxsrv-ol-01"
+      node.memory = "2048"
+      node.cpus = 2
+    end    
+  end
+  config.vm.define "zbxclnt01" do |h|
+    h.vm.box = "oraclelinux/8"
+    h.vm.hostname = "zbxclnt01"
+    h.vm.network "private_network", ip: "10.1.100.101"
+    h.vm.provision "shell", path: "provisioning.sh"
+    h.vm.provider "libvirt" do |node|
+      node.name = "zbxclnt-ol-01"
+      node.memory = "1024"
+      node.cpus = 2
+    end
+  end
+end
